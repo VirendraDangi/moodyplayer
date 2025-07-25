@@ -6,6 +6,8 @@ const FaceDetection = () => {
   const videoRef = useRef();
   const [expression, setExpression] = useState('');
   const [songs, setSongs] = useState([]);
+  const [loading, setLoading] = useState(false);
+
 
   // Load models and start video on mount
   useEffect(() => {
@@ -51,6 +53,7 @@ console.log(expression);
   if (!expression) return;
 
   const fetchSongs = async () => {
+        setLoading(true)
     try {
       const response = await axios.get(
         `https://moodyplayer.onrender.com/song?mood=${expression}`
@@ -59,6 +62,8 @@ console.log(expression);
       setSongs(response.data.songs || []);
     } catch (error) {
       console.error("Error fetching songs:", error.message);
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -138,38 +143,59 @@ console.log(expression);
       </div>
 
       <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-16">
-          {songs.map((song, index) => (
-            <div
-              key={song._id}
-              className="group relative bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-500 ease-out transform hover:scale-105 hover:shadow-2xl"
-              style={{
-                animationDelay: `${index * 0.1}s`
-              }}
-            >
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-indigo-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Content */}
-              <div className="relative z-10">
-                <h1 className="text-xl font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
-                  🎵 {song.title}
-                </h1>
-                <h2 className="text-gray-400 text-sm mb-4">
-                  👤 {song.artist}
-                </h2>
-                <audio
-                  src={song.audio}
-                  controls
-                  className="w-full rounded-xl bg-black/30 backdrop-blur-sm"
-                />
-              </div>
+       <div className="w-full min-h-[200px]">
+  {loading ? (
+    <div className="flex justify-center items-center py-16">
+      <svg
+        className="animate-spin h-12 w-12 text-pink-400"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path>
+      </svg>
+    </div>
+  ) : (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-16">
+      {songs.map((song, index) => (
+        <div
+          key={song._id}
+          className="group relative bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-500 ease-out transform hover:scale-105 hover:shadow-2xl"
+          style={{ animationDelay: `${index * 0.1}s` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-indigo-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-              {/* Hover effect border */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 opacity-0 group-hover:opacity-20 blur-sm transition-opacity duration-500 -z-10 scale-105"></div>
-            </div>
-          ))}
+          <div className="relative z-10">
+            <h1 className="text-xl font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
+              🎵 {song.title}
+            </h1>
+            <h2 className="text-gray-400 text-sm mb-4">
+              👤 {song.artist}
+            </h2>
+            <audio
+              src={song.audio}
+              controls
+              className="w-full rounded-xl bg-black/30 backdrop-blur-sm"
+            />
+          </div>
         </div>
+      ))}
+    </div>
+  )}
+</div>
+
       </div>
     </div>
 

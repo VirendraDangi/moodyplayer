@@ -41,17 +41,29 @@ const FaceDetection = () => {
         .reduce((a, b) => (a[1] > b[1] ? a : b))[0];
       setExpression(exp);
     }
- 
-      axios.get(`https://moodyplayer.onrender.com/song?mood=${expression}`)
-
-    .then(response=>{
-           setSongs(response.data.songs);
-      console.log(response.data);
-    })
-console.log(expression);
-  
    
+
+console.log(expression);
+   
+  }
+
+  useEffect(() => {
+  if (!expression) return;
+
+  const fetchSongs = async () => {
+    try {
+      const response = await axios.get(
+        `https://moodyplayer.onrender.com/song?mood=${expression}`
+      );
+      console.log(response.data);
+      setSongs(response.data.songs || []);
+    } catch (error) {
+      console.error("Error fetching songs:", error.message);
+    }
   };
+
+  fetchSongs();
+}, [expression]);
       
       
   return (

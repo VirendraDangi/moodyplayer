@@ -42,7 +42,8 @@ const FaceDetection = () => {
       setExpression(exp);
     }
  
-      axios.get(`http://localhost:3000/song?mood=${expression}`)
+      axios.get(`https://moodyplayer.onrender.com/song?mood=${expression}`)
+
     .then(response=>{
            setSongs(response.data.songs);
       console.log(response.data);

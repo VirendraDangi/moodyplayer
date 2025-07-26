@@ -30,7 +30,7 @@ router.post("/song",upload.single("audio"),async(req,res)=>{   // upload.single(
 })
 
 
-router.get("/song",async(req,res)=>{
+router.get("/song", async(req,res)=>{
     const {mood} = req.query           
 
     const songs = await song.find({

@@ -1,7 +1,9 @@
 const mongoose = require("mongoose")
 
 const songSchema = new mongoose.Schema({
-    title : String,
+    title : {
+        type :String
+    },
     artist : String,
     audio : String,
     mood : String

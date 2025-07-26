@@ -7,9 +7,29 @@ const FaceDetection = () => {
   const [expression, setExpression] = useState('');
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const  [detecting, setdetecting] = useState(false)
 
 
-  // Load models and start video on mount
+  const handleAudioPlay = (e)=>{
+       
+        const current = e.target
+    const audio = document.querySelectorAll("audio")
+     console.log(audio);
+     
+
+    audio.forEach((Audio)=>{
+      if(current!==Audio){
+        Audio.pause()
+          console.log("Pausing", audio.src);
+        audio.currentTime = 0
+      }
+    })
+  }
+
+
+
+
+
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = '/models'; // models must be in public/models
@@ -32,7 +52,9 @@ const FaceDetection = () => {
 
   // 👇 This is your manual expression detection function
   const detectExpressionOnce = async () => {
+        setdetecting(true)
     if (!videoRef.current || videoRef.current.readyState !== 4) return;
+ 
 
     const detections = await faceapi
       .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions())
@@ -44,7 +66,7 @@ const FaceDetection = () => {
       setExpression(exp);
     }
    
-
+setdetecting(false)
 console.log(expression);
    
   }
@@ -119,7 +141,7 @@ console.log(expression);
             className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <span className="relative cursor-pointer z-10">Detect Expression</span>
+         <span className="relative cursor-pointer z-10"> { detecting ? "Detecting" : "Detect Expression"}  </span>  
             <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
           </button>
 
@@ -186,6 +208,7 @@ console.log(expression);
             </h2>
             <audio
               src={song.audio}
+              onPlay={handleAudioPlay}
               controls
               className="w-full rounded-xl bg-black/30 backdrop-blur-sm"
             />
